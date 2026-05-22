@@ -64,6 +64,8 @@ resource "null_resource" "eks_logging" {
         --logging '{"clusterLogging":[{"types":["api","audit","authenticator","controllerManager","scheduler"],"enabled":true}]}' \
         --no-cli-pager
     CMD
+
+    on_failure = fail
   }
 
   depends_on = [aws_cloudwatch_log_group.eks_control_plane]

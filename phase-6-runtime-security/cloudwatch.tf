@@ -35,6 +35,12 @@ resource "aws_cloudwatch_log_metric_filter" "unauthorized_responses" {
   depends_on = [null_resource.eks_logging]
 }
 
+variable "alarm_sns_topic_arn" {
+  description = "Optional SNS topic ARN for CloudWatch alarm notifications"
+  type        = string
+  default     = null
+}
+
 # ── Alarm: spike in 403 Forbidden responses ───────────────────────────────────
 # Fires when 10+ forbidden responses are counted in any 5-minute window.
 resource "aws_cloudwatch_metric_alarm" "forbidden_spike" {
@@ -48,6 +54,7 @@ resource "aws_cloudwatch_metric_alarm" "forbidden_spike" {
   statistic           = "Sum"
   threshold           = 10
   treat_missing_data  = "notBreaching"
+  alarm_actions       = var.alarm_sns_topic_arn != null && var.alarm_sns_topic_arn != "" ? [var.alarm_sns_topic_arn] : []
 
   tags = {
     Phase   = "6"
@@ -67,6 +74,7 @@ resource "aws_cloudwatch_metric_alarm" "unauthorized_spike" {
   statistic           = "Sum"
   threshold           = 10
   treat_missing_data  = "notBreaching"
+  alarm_actions       = var.alarm_sns_topic_arn != null && var.alarm_sns_topic_arn != "" ? [var.alarm_sns_topic_arn] : []
 
   tags = {
     Phase   = "6"
