@@ -1,0 +1,17 @@
+# Encrypted StorageClass using the EBS CSI driver.
+# Replace <EBS_KMS_KEY_ARN> with the value of the ebs_kms_key_arn Terraform output:
+#   terraform output ebs_kms_key_arn
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: encrypted-gp3
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: ebs.csi.aws.com
+parameters:
+  type: gp3
+  encrypted: "true"
+  kmsKeyId: <EBS_KMS_KEY_ARN>
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
