@@ -9,7 +9,7 @@ resource "aws_iam_role" "developer" {
       Action = "sts:AssumeRole"
       Effect = "Allow"
       Principal = {
-        AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        AWS = data.aws_caller_identity.current.arn
       }
     }]
   })
@@ -24,7 +24,7 @@ resource "aws_iam_role" "qa" {
       Action = "sts:AssumeRole"
       Effect = "Allow"
       Principal = {
-        AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        AWS = data.aws_caller_identity.current.arn
       }
     }]
   })

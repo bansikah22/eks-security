@@ -32,6 +32,8 @@ resource "aws_eks_access_entry" "developer" {
   principal_arn     = aws_iam_role.developer.arn
   kubernetes_groups = []
   type              = "STANDARD"
+
+  depends_on = [terraform_data.wait_for_cluster]
 }
 
 # Access Policy Association for Developers (Edit access in development namespace)
@@ -52,6 +54,8 @@ resource "aws_eks_access_entry" "qa" {
   principal_arn     = aws_iam_role.qa.arn
   kubernetes_groups = []
   type              = "STANDARD"
+
+  depends_on = [terraform_data.wait_for_cluster]
 }
 
 # Access Policy Association for QA (View access in development namespace)

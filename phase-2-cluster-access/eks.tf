@@ -44,7 +44,6 @@ module "eks" {
 }
 
 # Ensure access entries are only created AFTER the cluster exists
-resource "time_sleep" "wait_for_cluster" {
+resource "terraform_data" "wait_for_cluster" {
   depends_on = [module.eks]
-  create_duration = "30s"
 }
