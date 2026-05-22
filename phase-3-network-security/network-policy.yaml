@@ -1,0 +1,32 @@
+# 1. Default Deny All Ingress in the Namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: development
+spec:
+  podSelector: {} # Selects ALL pods in the namespace
+  policyTypes:
+  - Ingress
+
+---
+# 2. Allow Frontend to Backend Traffic
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend-to-backend
+  namespace: development
+spec:
+  podSelector:
+    matchLabels:
+      app: backend # The policy applies to the backend pods
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: frontend # Only allow traffic FROM pods labeled 'app: frontend'
+    ports:
+    - protocol: TCP
+      port: 80
