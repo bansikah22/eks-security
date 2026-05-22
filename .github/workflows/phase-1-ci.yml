@@ -1,0 +1,56 @@
+name: Phase 1 - Container Image CI
+
+on:
+  push:
+    branches: [ "master", "feature/phase-1-securing-images" ]
+  pull_request:
+    branches: [ "master", "feature/phase-1-securing-images" ]
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: phase-1-securing-images
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: phase-1-securing-images/Dockerfile
+          failure-threshold: warning
+
+      - name: Build Docker Image
+        run: docker build -t my-secure-app:${{ github.sha }} .
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'my-secure-app:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+  terraform-validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: phase-1-securing-images
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init -backend=false
+
+      - name: Terraform Validate
+        run: terraform validate
