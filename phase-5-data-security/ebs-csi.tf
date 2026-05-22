@@ -1,3 +1,6 @@
+# Note: aws_kms_key.ebs is defined in kms.tf. Cross-file references are valid
+# in Terraform because all .tf files in the same directory form one root module.
+
 # ── Fetch cluster OIDC provider (needed for IRSA trust policy) ─────────────────
 data "aws_eks_cluster" "this" {
   name = var.cluster_name

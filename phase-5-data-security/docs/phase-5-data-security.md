@@ -108,12 +108,10 @@ terraform apply \
 
 ### Apply the encrypted StorageClass
 
-First replace the placeholder with the real key ARN, then apply:
+After `terraform apply`, Terraform generates `storageclass-generated.yaml` with the real KMS key ARN already substituted (via the `local_file` resource in `kms.tf`). Apply it directly:
 
 ```bash
-EBS_KEY_ARN=$(terraform output -raw ebs_kms_key_arn)
-
-sed "s|<EBS_KMS_KEY_ARN>|${EBS_KEY_ARN}|g" storageclass.yaml | kubectl apply -f -
+kubectl apply -f storageclass-generated.yaml
 ```
 
 Verify the StorageClass was created:
@@ -151,11 +149,21 @@ env:
 
 ### What to do — volume mount (tmpfs)
 
-`secret-pod.yaml` mounts the secret as a read-only volume. The kubelet delivers secret data to the pod through a `tmpfs` in-memory filesystem:
+`secret-pod.yaml` mounts the secret as a read-only volume. The kubelet delivers secret data to the pod through a `tmpfs` in-memory filesystem.
+
+First create the secret securely via `kubectl` (not from a YAML file with hardcoded values):
+
+```bash
+kubectl create secret generic app-credentials \
+  --namespace secrets-demo \
+  --from-literal=db-password='my-db-password' \
+  --from-literal=api-key='my-api-key'
+```
+
+Then apply the namespace and pod:
 
 ```bash
 kubectl apply -f namespace.yaml
-kubectl apply -f secret.yaml
 kubectl apply -f secret-pod.yaml
 ```
 
@@ -213,7 +221,7 @@ kubectl get secret app-credentials -n development
 ```bash
 # Delete Kubernetes resources
 kubectl delete -f secret-pod.yaml
-kubectl delete -f secret.yaml
+kubectl delete secret app-credentials -n secrets-demo
 kubectl delete -f namespace.yaml
 kubectl delete storageclass encrypted-gp3
 

@@ -1,3 +1,16 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.0"
+    }
+  }
+}
+
 provider "aws" {
   region = var.aws_region
 }
@@ -25,6 +38,34 @@ resource "aws_kms_key" "eks_secrets" {
   deletion_window_in_days = 7
   enable_key_rotation     = true
 
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "EnableIAMUserPermissions"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowEKSEnvelopeEncryption"
+        Effect = "Allow"
+        Principal = {
+          Service = "eks.amazonaws.com"
+        }
+        Action = [
+          "kms:Decrypt",
+          "kms:DescribeKey",
+          "kms:CreateGrant",
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+
   tags = {
     Name    = "${var.cluster_name}-secrets-encryption"
     Phase   = "5"
@@ -42,6 +83,23 @@ resource "aws_kms_key" "ebs" {
   description             = "CMK for EBS volume encryption via EBS CSI driver – ${var.cluster_name}"
   deletion_window_in_days = 7
   enable_key_rotation     = true
+
+  # The EBS CSI driver is granted access via aws_kms_grant in ebs-csi.tf.
+  # The root statement below enables IAM-based management of this key.
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "EnableIAMUserPermissions"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      }
+    ]
+  })
 
   tags = {
     Name    = "${var.cluster_name}-ebs-encryption"
@@ -64,4 +122,27 @@ output "secrets_kms_key_arn" {
 output "ebs_kms_key_arn" {
   description = "Use this ARN in the encrypted StorageClass kmsKeyId parameter"
   value       = aws_kms_key.ebs.arn
+}
+
+# ── Generate storageclass-generated.yaml with the real EBS KMS key ARN ─────────
+# After terraform apply, run: kubectl apply -f storageclass-generated.yaml
+resource "local_file" "storageclass" {
+  content = <<-YAML
+    apiVersion: storage.k8s.io/v1
+    kind: StorageClass
+    metadata:
+      name: encrypted-gp3
+      annotations:
+        storageclass.kubernetes.io/is-default-class: "false"
+    provisioner: ebs.csi.aws.com
+    parameters:
+      type: gp3
+      encrypted: "true"
+      kmsKeyId: ${aws_kms_key.ebs.arn}
+    reclaimPolicy: Delete
+    allowVolumeExpansion: true
+    volumeBindingMode: WaitForFirstConsumer
+  YAML
+  filename        = "${path.module}/storageclass-generated.yaml"
+  file_permission = "0644"
 }
