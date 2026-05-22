@@ -26,10 +26,17 @@ spec:
         app: backend
     spec:
       containers:
-      - name: nginx
-        image: nginx:alpine
-        ports:
-        - containerPort: 80
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -47,9 +54,16 @@ spec:
         app: frontend
     spec:
       containers:
-      - name: busybox
-        image: busybox
-        command: ["sleep", "3600"]
+        - name: busybox
+          image: busybox
+          command: ["sleep", "3600"]
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -67,6 +81,13 @@ spec:
         app: rogue
     spec:
       containers:
-      - name: busybox
-        image: busybox
-        command: ["sleep", "3600"]
+        - name: busybox
+          image: busybox
+          command: ["sleep", "3600"]
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
