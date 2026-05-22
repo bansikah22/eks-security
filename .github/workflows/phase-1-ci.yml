@@ -3,12 +3,20 @@ name: Phase 1 - Container Image CI
 on:
   push:
     branches: [ "master", "feature/phase-1-securing-images" ]
+    paths:
+      - 'phase-1-securing-images/**'
+      - '.github/workflows/phase-1-ci.yml'
   pull_request:
     branches: [ "master", "feature/phase-1-securing-images" ]
+    paths:
+      - 'phase-1-securing-images/**'
+      - '.github/workflows/phase-1-ci.yml'
 
 jobs:
   build-and-scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: phase-1-securing-images
@@ -27,7 +35,7 @@ jobs:
         run: docker build -t my-secure-app:${{ github.sha }} .
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: 'my-secure-app:${{ github.sha }}'
           format: 'table'
@@ -38,6 +46,8 @@ jobs:
 
   terraform-validate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: phase-1-securing-images
