@@ -11,6 +11,18 @@ provider "aws" {
   region = "eu-central-1" # Can be updated later
 }
 
+# Create a KMS Key for ECR
+resource "aws_kms_key" "ecr_key" {
+  description             = "KMS key for ECR encryption"
+  enable_key_rotation     = true
+  deletion_window_in_days = 7
+}
+
+resource "aws_kms_alias" "ecr_key_alias" {
+  name          = "alias/secure-app-ecr-key"
+  target_key_id = aws_kms_key.ecr_key.key_id
+}
+
 # Provision the ECR Repository
 resource "aws_ecr_repository" "secure_app_repo" {
   name                 = "secure-app"
@@ -22,6 +34,7 @@ resource "aws_ecr_repository" "secure_app_repo" {
 
   encryption_configuration {
     encryption_type = "KMS"
+    kms_key         = aws_kms_key.ecr_key.arn
   }
 
   force_delete = true

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 )
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
@@ -13,6 +14,7 @@ func main() {
 	http.HandleFunc("/", helloHandler)
 	fmt.Println("Server starting on port 8080...")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "Server failed to start: %v\n", err)
+		os.Exit(1)
 	}
 }
