@@ -1,0 +1,4 @@
+# Terraform state — never commit; contains account IDs, ARNs, and sensitive metadata
+*.tfstate
+*.tfstate.backup
+.terraform/
