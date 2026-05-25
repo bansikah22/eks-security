@@ -18,7 +18,7 @@ module "vpc" {
 # Provision the EKS Cluster using the official AWS module
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 20.0" # 2026 current stable module version
+  version = "~> 21.20" # 2026 current stable module version
 
   cluster_name    = var.cluster_name
   cluster_version = "1.31" # Use a modern Kubernetes version
