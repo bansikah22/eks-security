@@ -1,0 +1,54 @@
+# .github/dependabot.yml
+
+version: 2
+
+updates:
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  # Root-level Dockerfiles
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  # Phase 1 - Image Security
+  - package-ecosystem: "docker"
+    directory: "/phase-1-securing-images"
+    schedule:
+      interval: "daily"
+
+  # Phase 2 - Cluster Access
+  - package-ecosystem: "terraform"
+    directory: "/phase-2-cluster-access"
+    schedule:
+      interval: "daily"
+
+  # Phase 3 - Network Security
+  - package-ecosystem: "terraform"
+    directory: "/phase-3-network-security"
+    schedule:
+      interval: "daily"
+
+  # Phase 4 - App Permissions
+  - package-ecosystem: "docker"
+    directory: "/phase-4-application-permissions"
+    schedule:
+      interval: "daily"
+
+  # Phase 5 - Data Security
+  - package-ecosystem: "docker"
+    directory: "/phase-5-data-security"
+    schedule:
+      interval: "daily"
+
+  # Phase 6 - Runtime Security
+  - package-ecosystem: "docker"
+    directory: "/phase-6-runtime-security"
+    schedule:
+      interval: "daily"
+
+open-pull-requests-limit: 10
