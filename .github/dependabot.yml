@@ -8,47 +8,53 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 10
 
-  # Root-level Dockerfiles
+  # Root Dockerfiles
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 10
 
-  # Phase 1 - Image Security
+  # Phase 1
   - package-ecosystem: "docker"
     directory: "/phase-1-securing-images"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 10
 
-  # Phase 2 - Cluster Access
+  # Phase 2
   - package-ecosystem: "terraform"
     directory: "/phase-2-cluster-access"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 10
 
-  # Phase 3 - Network Security
+  # Phase 3
   - package-ecosystem: "terraform"
     directory: "/phase-3-network-security"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 10
 
-  # Phase 4 - App Permissions
+  # Phase 4
   - package-ecosystem: "docker"
     directory: "/phase-4-application-permissions"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 10
 
-  # Phase 5 - Data Security
+  # Phase 5
   - package-ecosystem: "docker"
     directory: "/phase-5-data-security"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 10
 
-  # Phase 6 - Runtime Security
+  # Phase 6
   - package-ecosystem: "docker"
     directory: "/phase-6-runtime-security"
     schedule:
       interval: "daily"
-
-open-pull-requests-limit: 10
+    open-pull-requests-limit: 10
