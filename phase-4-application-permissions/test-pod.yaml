@@ -16,7 +16,7 @@ spec:
       serviceAccountName: s3-reader
       containers:
         - name: aws-cli
-          image: public.ecr.aws/aws-cli/aws-cli:2.35.9
+          image: public.ecr.aws/aws-cli/aws-cli:2.35.13
           command: ["sleep", "3600"]
           resources:
             requests:
