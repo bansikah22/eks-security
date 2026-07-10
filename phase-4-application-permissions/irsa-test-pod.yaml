@@ -16,7 +16,7 @@ spec:
       serviceAccountName: s3-reader-irsa
       containers:
         - name: aws-cli
-          image: public.ecr.aws/aws-cli/aws-cli:2.35.17
+          image: public.ecr.aws/aws-cli/aws-cli:2.35.20
           command: ["sleep", "3600"]
           resources:
             requests:
